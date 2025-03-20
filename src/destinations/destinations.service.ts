@@ -33,4 +33,16 @@ export class DestinationsService {
 
         return destiantion;
     }
+
+    async deleteTravelPost(userId:number,id:number){
+        const deleteTravel = await this.prisma.destination.delete({
+            where  : { id,userId }
+        })
+
+        if(!deleteTravel){
+            throw new NotFoundException(`Cannot deleted Post with this id ${id}`);
+        }
+
+        return deleteTravel;
+    }
 }

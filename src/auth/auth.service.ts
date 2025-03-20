@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Registerdto } from './dto/register.dto';
 import * as bcrypt from 'bcryptjs'
@@ -62,5 +62,30 @@ export class AuthService {
         const {password:_,...result} = user;
 
         return { ...result,token};
+    }
+    async deleteUser(token: string) {
+        try {
+            // Extract userId from token
+            const payload = this.jwtService.verify(token);
+            const userId = payload.userId;
+
+            // Find user
+            const user = await this.prisma.user.findUnique({
+                where: { id: userId }
+            });
+
+            if (!user) {
+                throw new NotFoundException('User not found');
+            }
+
+            // Delete user
+            await this.prisma.user.delete({
+                where: { id: userId }
+            });
+
+            return { success: true, message: 'User deleted successfully' };
+        } catch (error) {
+            throw new UnauthorizedException('Invalid token');
+        }
     }
 }
