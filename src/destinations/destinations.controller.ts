@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Req, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, Request, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { DestinationsService } from './destinations.service';
 import { CreateDestinationDto } from './dto/create-destiantion.dto';
+import { updateDto } from './dto/update-destination.dto';
 
 @Controller('destinations')
 @UseGuards(JwtAuthGuard)
@@ -26,5 +27,10 @@ export class DestinationsController {
     @Delete('/delete/:id')
     findDeleted(@Request() req, @Param('id') id:string){
         return this.destinationService.deleteTravelPost(req.user.userId,+id);
+    }
+
+    @Patch('/update/:id')
+    findAndUpdate(@Request() req, @Param('id') id:string,@Body() updateDestinationDto:updateDto){
+        return this.destinationService.updateDestination(req.user.userId,+id,updateDestinationDto);
     }
 }

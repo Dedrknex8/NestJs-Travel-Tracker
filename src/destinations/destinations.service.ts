@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateDestinationDto } from './dto/create-destiantion.dto';
+import { updateDto } from './dto/update-destination.dto';
 
 @Injectable()
 export class DestinationsService {
@@ -44,5 +45,17 @@ export class DestinationsService {
         }
 
         return deleteTravel;
+    }
+    async updateDestination(userId:number,id:number, updateDestinationDto : updateDto){
+        const find = await this.findOne(userId,id) //this will use findOne by userid and id
+        if(!find){
+            throw new NotFoundException(`Cannot found post with this id : ${id}`)
+        }
+        console.log('updateDestinationDto:', updateDestinationDto);
+
+        return this.prisma.destination.update({
+            where : { id },
+            data : updateDestinationDto,    
+        })
     }
 }
